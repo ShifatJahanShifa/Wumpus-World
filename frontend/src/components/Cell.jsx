@@ -52,9 +52,10 @@ function Cell({ id, cheatMode, x, y }) {
   }
 
 
-  
+
   return (
     <div>
+
       <img src={imgId} width={imageSize} height={imageSize} alt={id} />
     </div>
   );

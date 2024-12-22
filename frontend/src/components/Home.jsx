@@ -3,6 +3,10 @@ import Cell from "./Cell";
 import CheatCell from "./CheatCell";
 import { play } from "./Play";
 
+import "../styles/Button.css";
+import "../styles/Grid.css";
+
+
 import useSound from "use-sound";
 import goldCollectSound from "../assets/movementSound.mp3";
 import shootSound from "../assets/scream.mp3";
@@ -10,11 +14,11 @@ import loseSound from "../assets/loseSound.mp3";
 import playSound from "../assets/playSound.mp3";
 import winSound from "../assets/winSound.mp3";
 
-
+import wumpus from "../assets/W.png";
+import deathWumpus from "../assets/D.png";
 
 const Grid = () => {
   const [cheatMode, setCheatMode] = useState(true);
-  // eslint-disable-next-line no-unused-vars
   const [board, setBoard] = useState(play.getBoard());
   const [finalMessage, setFinalMessage] = useState("");
   const [wumpusCnt, setWumpusCnt] = useState(3);
@@ -43,9 +47,9 @@ const Grid = () => {
   function resetBoard() {
     playBtnSound();
     play.resetGameEnvironment();
-    play.gameOnInit(latestWumpus, latestPit, latestGold, difficultyMode); // Update game parameters
+    play.gameOnInit(latestWumpus, latestPit, latestGold, difficultyMode); 
     setFinalMessage("");
-    setBoard([...play.getBoard()]); // Update the board
+    setBoard([...play.getBoard()]);
   }
 
   function handleWumpusCnt(event) {
@@ -86,89 +90,55 @@ const Grid = () => {
     setHoveredCell({ x, y, isHovered });
   };
 
-  const uploadBoard = (e) => {
-    resetBoard();
-    const file = e.target.files[0];
+  const uploadBoard=(e)=>{
+    resetBoard();  
+    const file=e.target.files[0]
+    const reader=new FileReader()
+    const newBoard=[]
 
-    // Create a new FileReader
-    const reader = new FileReader();
+    reader.onload=(event)=>{
+        const data=event.target.result
+        const lines=data.split("\n")
 
-    // Initialize variables to keep track of the read progress
-    let currentPosition = 0;
-    const chunkSize = 1024; // You can adjust this value to control the chunk size
-
-    // Initialize newBoard as an empty array
-    const newBoard = [];
-
-    reader.onload = (event) => {
-      const data = event.target.result;
-      const lines = data.split("\n"); // Split the data into lines
-
-      // Process each line
-      for (let i = 0; i < lines.length - 1; i++) {
-        const line = lines[i];
-        const row = [];
-
-        for (let j = 0; j < line.length - 1; j++) {
-          if (line[j] === "-") row.push("S");
-          else row.push(line[j]);
+        for(let i=0;i<lines.length;i++)
+        {
+            const line=lines[i].trim();
+            const row=[]
+            for(let j=0;j<line.length;j++)
+            {
+                if(line[j]==="-") row.push("S")
+                else row.push(line[j])
+            }
+            newBoard.push(row)
         }
 
-        newBoard.push(row);
-      }
-
-      // If there are more lines to process, continue reading
-      if (currentPosition < file.size) {
-        readNextChunk();
-      } else {
-        //? File reading is complete, you can now use newBoard
-        console.log("FILE: ", newBoard);
-        play.resetGameEnvironment();
-        play.setBoard(newBoard);
-
+        console.log("board setup",newBoard)
+        play.resetGameEnvironment()
+        play.setBoard(newBoard)
         setWumpusCnt(play.wumpusCount);
         setPitCnt(play.pitCount);
         setGoldCnt(play.goldCount);
-        setBoard([...play.getBoard()]);
-        // TODO: Update board with given one
-      }
-    };
+        setBoard([...play.getBoard()])
+    }
 
-    // Function to read the next chunk of data
-    const readNextChunk = () => {
-      const blob = file.slice(currentPosition, currentPosition + chunkSize);
-      reader.readAsText(blob);
-      currentPosition += chunkSize;
-    };
-
-    // Start reading the first chunk of data
-    readNextChunk();
-  };
+    reader.readAsText(file)
+}
 
   const moveAgent = async () => {
     playBtnSound();
 
-    //! this is must to recursively run the agent after a specific interval
     async function makeNextMove() {
       if (isMoving > 0 && !play.isGameOver()) {
-        // setShotFired(false);
-        // ****** NEW GAME ********
-        // moveSound();
-
         play.makeMove();
         if (play.isShoot) {
           setFinalMessage("Wumpus Shooted");
         }
-
-        // ****** New MOVE ********
 
         setBoard([...play.getBoard()]);
         isMoving = isMoving - 1;
         if (play.isGoldFound) {
           setFinalMessage(play.discoveredGold + " Gold Discovered");
         }
-
-        // Wait for a short period before making the next move
         await new Promise((resolve) => setTimeout(resolve, 100));
 
         if (play.isGameOver()) {
@@ -180,7 +150,7 @@ const Grid = () => {
           } else if (play.isYouLose()) {
             losingSound();
             setFinalMessage(
-              "🏳🏳 Nooo! You Lost! You fall into Pit => " +
+              "Lost the game !!! You fall into Pit => " +
                 play.agentIndex.row +
                 ", " +
                 play.agentIndex.column +
@@ -198,7 +168,7 @@ const Grid = () => {
     makeNextMove();
   };
 
-  //! Configured the Board for View [Dont' Dare to touch it]
+
   const grid = [];
   for (let r = 0; r < 10; r++) {
     const row = [];
@@ -222,8 +192,6 @@ const Grid = () => {
   }
 
   useEffect(() => {
-    // Play shootingSound when play.isShoot is true
-    console.log("A: ", play.isShoot);
     if (play.isShoot) {
       shootingSound();
       play.isShoot = false;
@@ -231,14 +199,13 @@ const Grid = () => {
   }, [play.isShoot, shootingSound]);
 
   useEffect(() => {
-    console.log("COINT: ", play.isGoldFound);
     if (play.isGoldFound) {
       coinCollectSound();
       play.isGoldFound = false;
     }
   }, [play.isGoldFound, coinCollectSound]);
 
-  // view
+
   return (
     <div style={{ display: "flex", flexDirection: "row" , height:"100px"}} className="game-container">
     
@@ -274,7 +241,12 @@ const Grid = () => {
         </div>
        </div>
       <div className="right-container"  style={{ display: "flex", flexDirection: "column]"}}> 
-        <div className="title" style={{fontSize: "40px"}}>Wumpus World</div>
+       
+        <div className="title" style={{fontSize: "40px", fontWeight:"bold"}}>
+        <img src={wumpus} height='60px' ></img>
+          Wumpus World
+         <img src={ deathWumpus} height='70px' ></img>
+          </div>
         <div className="game-board" style={{ display: "flex", margin: 0 }}>
           {grid.map((col, colIndex) => (
             <div key={colIndex} className="row">
@@ -292,6 +264,11 @@ const Grid = () => {
           ))}
 
 <div className="gameState" style={{ display: "flex", flexDirection: "column" }}>
+<div className="message-box">
+          <h2 className="alert-box" style={{ color: "black" }}>
+            {finalMessage}
+          </h2>
+        </div>
   <div className="inputSection">
     <div className="valueCover">
       <h2 style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
@@ -341,33 +318,10 @@ const Grid = () => {
       </div>
     </div>
 
-    <div className="valueCover">
-      <h2 style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
-        Daredevil Mode ⚡️
-      </h2>
-      <div className="toggle">
-        <input
-          className="toggle-input"
-          type="checkbox"
-          checked={isDareDevilMode}
-          onChange={handleDareDevilMode}
-        />
-        <div className="toggle-handle-wrapper">
-          <div className="toggle-handle">
-            <div className="toggle-handle-knob"></div>
-            <div className="toggle-handle-bar-wrapper">
-              <div className="toggle-handle-bar"></div>
-            </div>
-          </div>
-        </div>
-        <div className="toggle-base">
-          <div className="toggle-base-inside"></div>
-        </div>
-      </div>
-    </div>
+   
   </div>
 
-  <div className="playBtnSection" style={{ display: "flex", alignItems: "center", paddingLeft: "150px" }}>
+  <div className="playBtnSection" style={{ display: "flex", alignItems: "flex-start", paddingLeft: "10px" ,flexDirection:"row"}}>
     <button className="custom-btn" onClick={moveAgent}>
       Play 🎮
     </button>
@@ -379,15 +333,6 @@ const Grid = () => {
       Reset 🔄
     </button>
 
-    <div className="upload-group" style={{ marginTop: "1.2rem" }}>
-      <label htmlFor="customBoard">Upload Board 📤</label>
-      <input
-        className="form-field"
-        type="file"
-        name="customBoard"
-        onChange={(e) => uploadBoard(e)}
-      />
-    </div>
   </div>
 </div>
 
@@ -396,7 +341,7 @@ const Grid = () => {
       </div>
       
       <div className="left-bottom-container">
-  <div className="text-area">
+  <div className="text-area" style={{display:"flex",alignItems:"center",flexDirection:"row"}}>
     <h2 className="text-box" style={{ color: "#28a745" }}>
       ⭐ Points: <span className="highlight">{play.point}</span>
     </h2>
@@ -410,20 +355,9 @@ const Grid = () => {
       🚶 Moves: <span className="highlight">{play.moveCount}</span>
     </h2>
   </div>
-
-  {
-
-  }
-  {finalMessage && (
-    <div className="popup-container">
-      <div className="popup">
-        <h2 className="popup-message">{finalMessage}</h2>
-        <button className="popup-close-btn" onClick={closePopup}>
-          Close
-        </button>
-      </div>
-    </div>
-  )}
+  
+ 
+ 
 </div>
 
 
