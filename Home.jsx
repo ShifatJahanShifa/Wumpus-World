@@ -50,7 +50,6 @@ const Grid = () => {
     playBtnSound();
     play.resetGameEnvironment();
     play.gameOnInit(latestWumpus, latestPit, latestGold,latestArrowAvailable, difficultyMode); 
-    uploadBoard();
     setFinalMessage("");
     setBoard([...play.getBoard()]);
   }
@@ -381,6 +380,9 @@ const Grid = () => {
     </h2>
     <h2 className="text-box" style={{ color: "#007bff" }}>
       🚶 Moves: <span className="highlight">{play.moveCount}</span>
+    </h2>
+    <h2 className="text-box" style={{ color: "#007bff" }}>
+     🎯 Arrow: <span className="highlight">{play.arrowAvailable}</span>
     </h2>
   </div>
   
