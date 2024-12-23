@@ -11,7 +11,7 @@ exception: instead of a small grid, you’ll be using a larger 10 X 10 grid.
 
 ## Run locally
 ```
-  git clone:
+  clone: git clone https://github.com/ShifatJahanShifa/Wumpus-World.git
   cd frontend
   npm install
   npm run dev
