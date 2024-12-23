@@ -3,7 +3,7 @@ class Play{
     {
         console.log("starting from here ...")
         // wumpus count, pit count, gold count, arrowAvailable
-        this.gameInit(3,5,2,3)
+        this.gameOnInit(3,5,2,3)
     }
   
     /*
@@ -682,7 +682,7 @@ class Play{
       this.nearDanger[this.agentIndex.row][this.agentIndex.column] = true;
     }
   
-    gameInit(wumpusCount: any, pitCount: any, goldCount: any, arrowAvailable: any)
+    gameOnInit(wumpusCount: any, pitCount: any, goldCount: any, arrowAvailable: any)
     {
         this.wumpusCount=wumpusCount
         this.pitCount=pitCount
