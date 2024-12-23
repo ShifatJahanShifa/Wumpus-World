@@ -1,62 +1,80 @@
 import { play } from "./Play";
 
-
 function Cell({ id, cheatMode, x, y }) {
-  let imgId = `/assets/S.png`; 
-  let imageSize = 30;
+  let imgid, imageSize=40;
+
   const agent_x = play.agentIndex.row;
   const agent_y = play.agentIndex.column;
 
- 
-  if (agent_x === x && agent_y === y) {
+  const isAgentCell = agent_x === x && agent_y === y;
+  if (isAgentCell) {
     id = "A";
   }
 
   if (id.length > 1) {
-    if (id.includes("T") && id.includes("B")) {
+    if (
+      id == "TB" ||
+      id == "BT" ||
+      id == "TBG" ||
+      id == "BTG" ||
+      id == "TBS" ||
+      id == "SBS" ||
+      (id.includes("T") && id.includes("B"))
+    ) {
       id = "TB";
-    } 
-    else if (id.includes("T") && id.includes("G")) {
+    }
+    if (id == "TG" || id == "GT" || (id.includes("T") && id.includes("G"))) {
       id = "TG";
-    } 
-    else if (id.includes("B") && id.includes("G")) {
+    }
+    if (id == "BG" || id == "GB" || (id.includes("G") && id.includes("B"))) {
       id = "BG";
-    } 
-    else if (id.includes("G")) {
+    }
+    if (
+      id == "SG" ||
+      id == "GS" ||
+      id == "SGG" ||
+      id == "SSG" ||
+      id.includes("G")
+    ) {
       id = "G";
-    } 
-    else if (id.includes("B")) {
+    }
+    if (id == "" || id == "SS" || id == "" || id.includes("S")) {
+      id = "S";
+    }
+    if (id == "SB" || id == "BS" || (id.includes("B") && id.includes("S"))) {
       id = "B";
-    } 
-    else if (id.includes("T")) {
+    }
+    if (id == "TS" || (id.includes("T") && id.includes("S"))) {
       id = "T";
-    } 
-    else if (id.includes("W")) {
+    }
+    if (id == "WT" || id == "TW" || (id.includes("T") && id.includes("W"))) {
       id = "W";
-    } 
-    else if (id.includes("P")) {
+    }
+    if (id.includes("P")) {
       id = "P";
     }
+    if (id.includes("T") && id.includes("B") && id.includes("G")) {
+      id = "TBG";
+    }
+
+    imgid = `/assets/${id}.png`;
+  } else {
+    imgid = `/assets/${id}.png`;
   }
 
- 
-  if (id) {
-    imgId = `/assets/${id}.png`;
+  if (id == 0) {
+    imgid = `/assets/S.png`;
   }
-  if (id === "A") {
-    imageSize = 30;
-  }
+
+  
   if (cheatMode && id !== "A" && !play.cellVisited[x][y]) {
-    imgId = "/assets/cover.png";
-    imageSize = 45;
+    imgid = "/assets/cover.png";
+    imageSize = 50;
   }
-
-
 
   return (
     <div>
-
-      <img src={imgId} width={imageSize} height={imageSize} alt={id} />
+      <img src={imgid} width={imageSize} height={imageSize} alt={id} />
     </div>
   );
 }

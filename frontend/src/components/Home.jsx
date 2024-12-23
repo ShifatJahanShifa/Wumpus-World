@@ -24,6 +24,7 @@ const Grid = () => {
   const [wumpusCnt, setWumpusCnt] = useState(3);
   const [pitCnt, setPitCnt] = useState(5);
   const [goldCnt, setGoldCnt] = useState(2);
+  const [arrowAvailable, setArrowAvailable] = useState(3);
   const [isDareDevilMode, setDareDevilMode] = useState(false);
   const [playBtnSound] = useSound(playSound);
   const [coinCollectSound] = useSound(goldCollectSound);
@@ -34,6 +35,7 @@ const Grid = () => {
   let latestWumpus = wumpusCnt;
   let latestPit = pitCnt;
   let latestGold = goldCnt;
+  let latestArrowAvailable = arrowAvailable;
   let difficultyMode = "";
 
   let isMoving = 0;
@@ -47,7 +49,7 @@ const Grid = () => {
   function resetBoard() {
     playBtnSound();
     play.resetGameEnvironment();
-    play.gameOnInit(latestWumpus, latestPit, latestGold, difficultyMode); 
+    play.gameOnInit(latestWumpus, latestPit, latestGold,latestArrowAvailable, difficultyMode); 
     setFinalMessage("");
     setBoard([...play.getBoard()]);
   }
@@ -73,6 +75,13 @@ const Grid = () => {
     resetBoard();
   }
 
+  function handleArrowAvailable(event) {
+    const newValue = event.target.value;
+    latestArrowAvailable = newValue;
+    setArrowAvailable(newValue);
+    resetBoard();
+  }
+
   function handleDareDevilMode() {
     playBtnSound();
     setDareDevilMode(!isDareDevilMode);
@@ -90,8 +99,9 @@ const Grid = () => {
     setHoveredCell({ x, y, isHovered });
   };
 
-  const uploadBoard=(e)=>{
-    resetBoard();  
+  const uploadBoard=(e)=>{ 
+
+    resetBoard() 
     const file=e.target.files[0]
     const reader=new FileReader()
     const newBoard=[]
@@ -118,6 +128,7 @@ const Grid = () => {
         setWumpusCnt(play.wumpusCount);
         setPitCnt(play.pitCount);
         setGoldCnt(play.goldCount);
+        setArrowAvailable(play.arrowAvailable);
         setBoard([...play.getBoard()])
     }
 
@@ -281,7 +292,7 @@ const Grid = () => {
           max="50"
           value={wumpusCnt}
           onChange={handleWumpusCnt}
-          style={{ width: "60px" }}
+          style={{ width: "40px" }}
         />
       </div>
     </div>
@@ -297,7 +308,7 @@ const Grid = () => {
           max="50"
           value={pitCnt}
           onChange={handlePitCnt}
-          style={{ width: "60px" }}
+          style={{ width: "40px" }}
         />
       </div>
     </div>
@@ -313,7 +324,31 @@ const Grid = () => {
           max="50"
           value={goldCnt}
           onChange={handleGoldCnt}
-          style={{ width: "60px" }}
+          style={{ width: "40px" }}
+        />
+      </div>
+    </div>
+    <div className="upload-group" style={{ marginTop: "1.2rem" }}>
+                <label htmlFor="customBoard">Upload Board </label>
+                <input
+                  className="form-field"
+                  type="file"
+                  name="customBoard"
+                  onChange={(e) => uploadBoard(e)}
+                />
+              </div>
+    <div className="valueCover">
+      <h2 style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
+        Initial Arrow Count 🏆
+      </h2>
+      <div className="value">
+        <input
+          type="number"
+          min="1"
+          max="50"
+          value={arrowAvailable}
+          onChange={handleArrowAvailable}
+          style={{ width: "40px" }}
         />
       </div>
     </div>
@@ -321,7 +356,15 @@ const Grid = () => {
    
   </div>
 
-  <div className="playBtnSection" style={{ display: "flex", alignItems: "flex-start", paddingLeft: "10px" ,flexDirection:"row"}}>
+ 
+</div>
+
+
+
+      </div>
+     
+      <div className="left-bottom-container" style={{display: "flex", alignItems: "flex-start", paddingLeft: "10px" ,flexDirection:"column"}}>
+      <div className="playBtnSection" style={{ display: "flex", alignItems: "flex-start", paddingLeft: "10px" ,flexDirection:"row"}}>
     <button className="custom-btn" onClick={moveAgent}>
       Play 🎮
     </button>
@@ -334,13 +377,6 @@ const Grid = () => {
     </button>
 
   </div>
-</div>
-
-
-
-      </div>
-      
-      <div className="left-bottom-container">
   <div className="text-area" style={{display:"flex",alignItems:"center",flexDirection:"row"}}>
     <h2 className="text-box" style={{ color: "#28a745" }}>
       ⭐ Points: <span className="highlight">{play.point}</span>
@@ -353,6 +389,9 @@ const Grid = () => {
     </h2>
     <h2 className="text-box" style={{ color: "#007bff" }}>
       🚶 Moves: <span className="highlight">{play.moveCount}</span>
+    </h2>
+    <h2 className="text-box" style={{ color: "#007bff" }}>
+     🎯 Arrow: <span className="highlight">{play.arrowAvailable}</span>
     </h2>
   </div>
   
